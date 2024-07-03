@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin: 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            position: relative;
+            padding-right: 40px; /* Add space for the logo */
+        }
+        .card-logo-container {
+            position: absolute;
+            right: 10px;
+            width: 34px; /* Adjust size as needed */
+            height: 22px;
+            display: inline-block;
+            border: 1px solid #b6b3b3;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2px;
+            background-color: white; /* Keep the background visible */
+        }
+        .cvc-logo-container {
+            position: absolute;
+            right: 10px;
+            width: 34px; /* Adjust size as needed */
+            height: 22px;
+            display: none;
+            border: 1px solid #b6b3b3;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2px;
+            background-color: white; /* Keep the background visible */
+        }
+        .card-logo {
+            width: 100%;
+            height: 100%;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+            display: none;
+        }
+        /* Customizing Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #af13c4;
+        }
+        .successMessage {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            width: 80%;
+            text-align: center;
+            display: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class = "successMessage" id="successMessage">
+        <p>Congratulations! You have successfully payment.</p>
+    </div>
+    <div class="container">
+        <h2>Payment Information</h2>
+        <form id="paymentForm" method="post">
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <div class="input-container">
+                    <input type="text" id="cardNumber" maxlength="19" inputmode="numeric" onkeypress="return isNumberKey(event)" oninput="formatCardNumber()" onpaste="handlePaste(event)" placeholder="4000 1234 5678 9010" required>
+                    <div class="card-logo-container">
+                        <img src="https://raw.githubusercontent.com/thanhcodervietnam/basicpayment/main/card.png" alt="Card Logo" id="cardLogo" class="card-logo">
+                    </div>
+                </div>
+                <div id="cardNumberError" class="error">Invalid card number.</div>
+            </div>
+            <div class="form-group">
+                <label for="expirationDate">Expiration Date</label>
+                <input type="text" id="expirationDate" maxlength="7" inputmode="numeric" onkeypress="return isNumberKey(event)" oninput="formatExpirationDate()" placeholder="MM/YY" required>
+                <div id="expirationDateError" class="error">Invalid month or card has expired.</div>
+            </div>
+            <div class="form-group">
+                <label for="cvc">CVC</label>
+                <div class="input-container">
+                    <input type="text" id="cvc" maxlength="3" inputmode="numeric" onkeypress="return isNumberKey(event)" oninput="validateCVC()" onfocus="showCVCLogo()" onblur="hideCVCLogo()" onpaste="handlePaste(event)" placeholder="123" required>
+                    <div class="cvc-logo-container" id="cvcLogoContainer">
+                        <img src="https://raw.githubusercontent.com/thanhcodervietnam/basicpayment/main/card-behind.png" alt="CVC Logo" id="cvcLogo" class="card-logo">
+                    </div>
+                </div>
+                <div id="cvcError" class="error">CVC must be 3 digits.</div>
+            </div>
+            <div class="form-group">
+                <label for="cardholderName">Name</label>
+                <input type="text" id="cardholderName" placeholder="Smith James" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+
+        function handlePaste(event) {
+            event.preventDefault();
+            const pasteData = event.clipboardData.getData('text').replace(/\D/g, '');
+            document.execCommand('insertText', false, pasteData);
+        }
+
+        function formatCardNumber() {
+            var cardNumberInput = document.getElementById('cardNumber');
+            let value = cardNumberInput.value.replace(/\D/g, '');
+            
+            // Format to XXXX XXXX XXXX XXXX
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            
+            cardNumberInput.value = value;
+            validateCardNumber();
+        }
+
+        function validateCardNumber() {
+            var cardNumberInput = document.getElementById('cardNumber');
+            var cardLogo = document.getElementById('cardLogo');
+            const cardNumberError = document.getElementById('cardNumberError');
+            var cardNumber = cardNumberInput.value.replace(/\D/g, '');
+    
+            if (cardNumber.length === 0) {
+                cardNumberError.style.display = 'none';
+            } else if (cardNumber.length !== 16 || !isValidCardNumber(cardNumber)) {
+                cardNumberError.style.display = 'block';
+            } else {
+                cardNumberError.style.display = 'none';
+            }
+
+            // Visa logo display condition
+            if (cardNumber.startsWith('4')) {
+                cardLogo.src = 'https://raw.githubusercontent.com/thanhcodervietnam/basicpayment/main/visa.png'; // Replace with actual path to Visa logo
+                cardLogo.style.display = 'inline';
+            }
+            // Mastercard logo display condition
+            else if (/^5[1-5]/.test(cardNumber)) {
+                cardLogo.src = 'https://raw.githubusercontent.com/thanhcodervietnam/basicpayment/main/mastercard.png'; // Replace with actual path to Mastercard logo
+                cardLogo.style.display = 'inline';
+            }
+            // Keep the frame but hide logo if neither Visa nor Mastercard pattern matches
+            else {
+                cardLogo.src = 'https://raw.githubusercontent.com/thanhcodervietnam/basicpayment/main/card.png';
+            }
+        }
+
+        function isValidCardNumber(cardNumber) {
+            let sum = 0;
+            let shouldDouble = false;
+            for (let i = cardNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cardNumber.charAt(i));
+                if (shouldDouble) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+            return sum % 10 === 0;
+        }
+
+        function formatExpirationDate() {
+            const expirationDateInput = document.getElementById('expirationDate');
+            let value = expirationDateInput.value.replace(/\D/g, '');
+            
+            if (value.length > 2) {
+                value = value.substring(0, 2) + ' / ' + value.substring(2);
+            }
+
+            expirationDateInput.value = value;
+            validateExpirationDate();
+        }
+
+        function validateExpirationDate() {
+            const expirationDateInput = document.getElementById('expirationDate');
+            const expirationDateError = document.getElementById('expirationDateError');
+            const dateParts = expirationDateInput.value.split(' / ');
+            if (dateParts.length === 2) {
+                let month = parseInt(dateParts[0], 10);
+                let year = dateParts[1];
+                
+                if (year.length === 4) {
+                    year = year.substring(2);
+                }
+                
+                // Format month to always have 2 digits
+                month = month.toString().padStart(2, '0');
+                
+                expirationDateInput.value = `${month} / ${year}`;
+                
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth() + 1;
+                const currentYear = currentDate.getFullYear() % 100;
+                
+                if (month.length === 0 || year.length === 0) {
+                    expirationDateError.style.display = 'none';
+                } else if (month < 1 || month > 12) {
+                    expirationDateError.textContent = 'Invalid month.';
+                    expirationDateError.style.display = 'block';
+                } else if (parseInt(year) < currentYear || (parseInt(year) === currentYear && parseInt(month) < currentMonth)) {
+                    expirationDateError.textContent = 'Card has expired.';
+                    expirationDateError.style.display = 'block';
+                } else {
+                    expirationDateError.style.display = 'none';
+                }
+            } else {
+                expirationDateError.style.display = 'none';
+            }
+        }
+
+        function validateCVC() {
+            const cvcInput = document.getElementById('cvc');
+            const cvcError = document.getElementById('cvcError');
+            const cvcLogoContainer = document.getElementById('cvcLogoContainer');
+            const cvc = cvcInput.value.replace(/\D/g, '');
+    
+            if (cvc.length === 0) {
+                cvcError.style.display = 'none';
+            } else if (cvc.length !== 3) {
+                cvcError.style.display = 'block';
+            } else {
+                cvcError.style.display = 'none';
+            }
+
+            if (cvc.length > 0 || document.activeElement === cvcInput) {
+                cvcLogoContainer.style.display = 'inline-block';
+            } else {
+                cvcLogoContainer.style.display = 'none';
+            }
+        }
+
+        function showCVCLogo() {
+            const cvcLogoContainer = document.getElementById('cvcLogoContainer');
+            cvcLogoContainer.style.display = 'inline-block';
+        }
+
+        function hideCVCLogo() {
+            const cvcInput = document.getElementById('cvc');
+            const cvcLogoContainer = document.getElementById('cvcLogoContainer');
+            if (cvcInput.value.replace(/\D/g, '').length === 0) {
+                cvcLogoContainer.style.display = 'none';
+            }
+        }
+
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+            validateCardNumber();
+            validateExpirationDate();
+            validateCVC();
+            
+            if (document.getElementById('cardNumberError').style.display === 'block' ||
+                document.getElementById('expirationDateError').style.display === 'block' ||
+                document.getElementById('cvcError').style.display === 'block') {
+                event.preventDefault();
+            } else {
+                // Simulate successful payment
+                event.preventDefault(); // Prevent actual form submission
+            
+                // Display success message after 0.5 seconds
+                setTimeout(function() {
+                    document.getElementById('successMessage').style.display = 'block';
+
+                    // Redirect after another 0.5 seconds
+                    setTimeout(function() {
+                        window.location.href = 'https://thanhcodervietnam.github.io/basicpayment/payment_address.html'; // Replace with your actual redirect URL
+                    }, 1000);
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
