@@ -322,6 +322,10 @@
                 // Display success message after 0.5 seconds
                 setTimeout(function() {
                     document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('cardNumber').value = '';
+                    document.getElementById('expirationDate').value = '';
+                    document.getElementById('cvc').value = '';
+                    document.getElementById('cardholderName').value = '';
 
                     // Redirect after another 0.5 seconds
                     setTimeout(function() {
