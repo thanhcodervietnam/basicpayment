@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Address</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+        }
+        .success-box {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            text-align: center;
+            top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+            position: relative;
+        }
+        /* Customizing Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #af13c4;
+        }
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-box" id="successMessage">
+        Congratulations! You have successfully added your payment address.
+    </div>
+    <div class = "container">
+        <h2>Payment Address</h2>
+        <form id="paymentAddress">
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <select id="country" name="country">
+                    <option value="us">United States</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="ca">Canada</option>
+                    <option value="au">Australia</option>
+                    <option value="ru">Russia</option>
+                    <option value="cn">China</option>
+                    <option value="br">Brazil</option>
+                    <option value="in">India</option>
+                    <option value="ar">Argentina</option>
+                    <option value="kz">Kazakhstan</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+            <div class="form-group">
+                <!--Maybe the address I write is incorrect because I'm not American-->
+                <label for="address1">Address Line 1:</label>
+                <input type="text" id="address1" name="address1" placeholder="Manhattan, New York City, New York State, US" required>
+            </div>
+            <div class="form-group">
+                <label for="address2">Address Line 2 (Optional):</label>
+                <input type="text" id="address2" name="address2" placeholder="Texas City, Texas State, US">
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" placeholder="New York" required>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="state">State/Province/Region:</label>
+                    <input type="text" id="state" name="state" placeholder="New York" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">Zip/Postal Code:</label>
+                    <input type="text" id="zip" name="zip" placeholder="10001" required pattern="[A-Za-z0-9]{5,10}" title="Zip/Postal code must be 5 - 10 characters long" maxlength = "10">
+                </div>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('paymentAddress').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Display success message with a delay
+            setTimeout(function() {
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('address1').value = '';
+                document.getElementById('address2').value = '';
+                document.getElementById('city').value = '';
+                document.getElementById('state').value = '';
+                document.getElementById('zip').value = '';
+                
+            }, 500); // 500 milliseconds delay (0.5 seconds)
+        });
+    </script>
+</body>
+</html>
